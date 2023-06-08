@@ -1,0 +1,21 @@
+.wrapper {
+    display: flex;
+    align-items: center;
+}
+._wrapper {
+    margin-left: 24px;
+}
+
+.name {
+    font-size: 20px;
+    font-weight: 600;
+    line-height: 26px;
+}
+
+.links {
+    display: flex;
+}
+.link {
+    margin-right: 15px;
+
+}
