@@ -1,10 +1,14 @@
 import React, { useState } from "react";
-import classes from "./MainInfo.module.scss";
 import Input from "shared/Input/Input";
 import SelectField from "shared/SelectField/SelectField";
 import { useNavigate } from "react-router-dom";
-import Button from "shared/Button/Button";
 import PrevNextSteps from "features/PrevNextSteps/PrevNextSteps";
+import { useDispatch, useSelector } from "react-redux";
+import { userActions } from "entities/User/model/slice/userSlice";
+import { getNickName } from "entities/User/model/selectors/getNickName";
+import { getName } from "entities/User/model/selectors/getName";
+import { getSurname } from "entities/User/model/selectors/getSurname";
+import { getSex } from "entities/User/model/selectors/getSex";
 
 export enum Sex {
 	MAN = "man",
@@ -20,11 +24,17 @@ interface IMainInfo {
 }
 
 const MainInfo = () => {
+	const dispatch = useDispatch();
+	const nickName = useSelector(getNickName);
+	const name = useSelector(getName);
+	const surname = useSelector(getSurname);
+	const sex = useSelector(getSex);
+
 	const [mainInfo, setMainInfo] = useState<IMainInfo>({
-		nickName: "",
-		name: "",
-		surname: "",
-		sex: Sex.DEFAULT,
+		nickName,
+		name,
+		surname,
+		sex,
 	});
 
 	const navigate = useNavigate();
@@ -53,6 +63,7 @@ const MainInfo = () => {
 	};
 	const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
+		dispatch(userActions.submitMainInfo(mainInfo));
 		navigate("step/2");
 	};
 	return (

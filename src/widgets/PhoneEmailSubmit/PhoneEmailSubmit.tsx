@@ -2,6 +2,10 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Button from "shared/Button/Button";
 import Input from "shared/Input/Input";
+import { useDispatch, useSelector } from "react-redux";
+import { userActions } from "entities/User/model/slice/userSlice";
+import { getEmail } from "entities/User/model/selectors/getEmail";
+import { getPhone } from "entities/User/model/selectors/getPhone";
 
 export interface MainInfo {
 	phone: string;
@@ -9,10 +13,14 @@ export interface MainInfo {
 }
 
 const PhoneEmailSubmit = () => {
+	const dispatch = useDispatch();
 	const navigate = useNavigate();
+	const email = useSelector(getEmail);
+	const phone = useSelector(getPhone);
+
 	const [mainInfo, setMainInfo] = useState<MainInfo>({
-		phone: "",
-		email: "",
+		phone,
+		email,
 	});
 	const handleChange = (data: { name: string; value: string }) => {
 		setMainInfo((prevState) => ({
@@ -22,6 +30,7 @@ const PhoneEmailSubmit = () => {
 	};
 	const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
+		dispatch(userActions.submitPhoneAndEmail(mainInfo));
 		navigate("/create");
 	};
 	return (

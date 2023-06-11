@@ -7,47 +7,88 @@ import Input from "shared/Input/Input";
 import RadioField from "shared/RadioField/RadioField";
 import classes from "./AdditionalInfo.module.scss";
 import { ReactComponent as DeleteIcon } from "shared/assets/icons/deleteIcon.svg";
+import { StateSchema } from "app/providers/storeProvider/config/stateSchema";
+import { useSelector, useDispatch } from "react-redux";
+import { userActions } from "entities/User/model/slice/userSlice";
+import { Advantage, CheckboxGroup } from "entities/User/model/types/userSchema";
+import { getAdvantages } from "entities/User/model/selectors/getAdvantages";
+import { getRadioValue } from "entities/User/model/selectors/getRadioValue";
+import { getCheckboxGroup } from "entities/User/model/selectors/getCheckboxGroup/getCheckboxGroup";
 
 export type Options = {
 	name: string;
 	value: string;
 };
 
+interface ExtraInfo {
+	advantages: Advantage[];
+	checkboxGroup: CheckboxGroup[];
+	radioValue: string;
+}
+
 const AdditionalInfo = () => {
 	const navigate = useNavigate();
-	const [countInputAreas, setCountInputAreas] = useState([1, 2, 3]);
-	const [extraInfo, setExtraInfo] = useState<any>({
-		checkbox1: false,
-		checkbox2: false,
-		checkbox3: false,
-		radioValue: "",
+	const dispatch = useDispatch();
+	const advantages = useSelector(getAdvantages);
+	const radioValue = useSelector(getRadioValue);
+	const checkboxGroup = useSelector(getCheckboxGroup);
+	const [extraInfo, setExtraInfo] = useState<ExtraInfo>({
+		advantages,
+		checkboxGroup,
+		radioValue,
 	});
+
 	useEffect(() => {
-		setExtraInfo((prevState: any) => {
-			const newArr = [...countInputAreas];
-			const object: any = { ...prevState };
-			newArr.forEach((el, id) => {
-				object["input" + id] = "";
-			});
-
-			return { ...object };
-		});
-	}, [countInputAreas]);
-
-	const handleChange = (data: { name: string; value: string | boolean }) => {
 		setExtraInfo((prevState: any) => ({
 			...prevState,
-			[data.name]: data.value,
+			advantages: advantages,
 		}));
+	}, [advantages]);
+
+	const handleChange = (data: { name: string; value: string | boolean }) => {
+		if (data.name.includes("advantage")) {
+			setExtraInfo((prevState: any): ExtraInfo => {
+				const newAdvantagesArr = prevState.advantages.map(
+					(advantage: any) => {
+						if (advantage.name === data.name) {
+							return { ...advantage, ...data };
+						} else {
+							return advantage;
+						}
+					}
+				);
+
+				return { ...prevState, advantages: newAdvantagesArr };
+			});
+		} else if (data.name.includes("checkbox")) {
+			setExtraInfo((prevState: any): ExtraInfo => {
+				const newCheckboxGroup = prevState.checkboxGroup.map(
+					(check: any) => {
+						if (check.name === data.name) {
+							return { ...check, ...data };
+						} else {
+							return check;
+						}
+					}
+				);
+
+				return { ...prevState, checkboxGroup: newCheckboxGroup };
+			});
+		} else {
+			setExtraInfo((prevState: any) => ({
+				...prevState,
+				[data.name]: data.value,
+			}));
+		}
 	};
 
 	const handleAddInput = () => {
-		const newElement = countInputAreas.slice(-1)[0] + 1;
-		setCountInputAreas((prevState) => [...prevState, newElement]);
+		dispatch(userActions.addAdvantage());
 	};
 
 	const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
+		dispatch(userActions.submitExtraInfo(extraInfo));
 		navigate("step/3");
 	};
 
@@ -60,15 +101,15 @@ const AdditionalInfo = () => {
 	return (
 		<form onSubmit={handleSubmit}>
 			<div className={classes.inputWrapper}>
-				{countInputAreas.map((el, id) =>
+				{extraInfo.advantages.map((advantage, id) =>
 					id === 0 ? (
 						<div className={classes.inputGroup}>
 							<Input
-								key={el + id}
+								key={advantage.name}
 								placeHolder="Введите ваши качества"
 								type="text"
-								name={`input${id}`}
-								value={extraInfo[`input${id}`]}
+								name={advantage.name}
+								value={advantage.value}
 								handleChange={handleChange}
 							/>
 							<button
@@ -84,12 +125,11 @@ const AdditionalInfo = () => {
 					) : (
 						<div className={classes.inputGroup}>
 							<Input
-								key={el + id}
-								inputLabel=""
+								key={advantage.name}
 								placeHolder="Введите ваши качества"
 								type="text"
-								name={`input${id}`}
-								value={extraInfo[`input${id}`]}
+								name={advantage.name}
+								value={advantage.value}
 								handleChange={handleChange}
 							/>
 							<button>{<DeleteIcon />}</button>
@@ -100,24 +140,14 @@ const AdditionalInfo = () => {
 			<Button type="button" handleClick={handleAddInput} text="+" />
 
 			<div className={classes.checkBoxGroup}>
-				<CheckBoxField
-					value={extraInfo.checkbox1}
-					checkBoxLabel="1"
-					name="checkbox1"
-					handleChange={handleChange}
-				/>
-				<CheckBoxField
-					value={extraInfo.checkbox2}
-					checkBoxLabel="2"
-					name="checkbox2"
-					handleChange={handleChange}
-				/>
-				<CheckBoxField
-					value={extraInfo.checkbox3}
-					checkBoxLabel="3"
-					name="checkbox3"
-					handleChange={handleChange}
-				/>
+				{extraInfo.checkboxGroup.map((check, id) => (
+					<CheckBoxField
+						value={check.value}
+						checkBoxLabel={String(id + 1)}
+						name={check.name}
+						handleChange={handleChange}
+					/>
+				))}
 			</div>
 			<div className={classes.radioGroup}>
 				<RadioField
