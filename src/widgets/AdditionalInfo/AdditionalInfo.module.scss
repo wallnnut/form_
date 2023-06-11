@@ -1,0 +1,22 @@
+.inputWrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: 50%;
+    margin-bottom: 8px;
+}
+
+.checkBoxGroup {
+    margin-top: 24px;
+}
+
+.radioGroup {
+    margin-top: 24px;
+}
+
+.inputGroup {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+}

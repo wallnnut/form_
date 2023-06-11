@@ -40,4 +40,6 @@ declare module "react-step-progress-bar" {
 	class ProgressBar extends React.Component<ProgressBarProps, any> {}
 	class Step extends React.Component<StepProps, any> {}
 }
+
+
   

@@ -1,6 +1,4 @@
-.inputGroup {
-    margin-bottom: 24px;
-}
+
 
 .input {
     background: rgba(0, 0, 0, 0.04);   
@@ -9,8 +7,10 @@
     padding: 8px;
     border-radius: 4px;
     width: 100%;
+    display: inline-block;
 }
 
-.inputName {
+.inputLabel {
+    display: inline-block;
     margin-bottom: 8px;
 }

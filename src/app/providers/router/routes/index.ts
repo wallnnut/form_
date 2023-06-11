@@ -1,7 +1,7 @@
 import MainPage from "pages/MainPage";
 import CreatePage from "pages/CreatePage";
-import Step2 from "pages/Step2";
-import Step3 from "pages/Step3";
+import AdditionalInfo from "widgets/AdditionalInfo/AdditionalInfo";
+import AboutInfo from "widgets/AboutInfo/AboutInfo";
 
 export const routes = [
 	{
@@ -14,13 +14,11 @@ export const routes = [
 		children: [
 			{
 				path: "step/:id",
-				Component: Step2,
-				children: [
-					{
-						path: "step/:id",
-						Component: Step3,
-					},
-				],
+				Element: AdditionalInfo,
+			},
+			{
+				path: "step/:id",
+				Element: AboutInfo,
 			},
 		],
 	},

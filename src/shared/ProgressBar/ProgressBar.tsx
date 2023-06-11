@@ -1,49 +1,55 @@
 import React, { FC } from "react";
 import classes from "./ProgressBar.module.scss";
-import "react-step-progress-bar/styles.css";
 import { ProgressBar, Step } from "react-step-progress-bar";
+import { ReactComponent as Dot } from "shared/assets/icons/Dot.svg";
+import { ReactComponent as DotGray } from "shared/assets/icons/Dotgray.svg";
+import { ReactComponent as DotChecked } from "shared/assets/icons/DotChecked.svg";
+import "react-step-progress-bar/styles.css";
 
-const StepProgressBar: FC = () => {
+interface IStepProgress {
+	persent: number;
+}
+
+const StepProgressBar: FC<IStepProgress> = ({ persent }) => {
 	return (
-		<ProgressBar
-			percent={75}
-			filledBackground="linear-gradient(to right, #fefb72, #f0bb31)"
-		>
-			<Step transition="scale">
-				{({ accomplished }) => (
-					<img
-						style={{
-							filter: `grayscale(${accomplished ? 0 : 80}%)`,
-						}}
-						width="30"
-						src="https://vignette.wikia.nocookie.net/pkmnshuffle/images/9/9d/Pichu.png/revision/latest?cb=20170407222851"
-					/>
-				)}
-			</Step>
-			<Step transition="scale">
-				{({ accomplished }) => (
-					<img
-						style={{
-							filter: `grayscale(${accomplished ? 0 : 80}%)`,
-						}}
-						width="30"
-						src="https://vignette.wikia.nocookie.net/pkmnshuffle/images/9/97/Pikachu_%28Smiling%29.png/revision/latest?cb=20170410234508"
-					/>
-				)}
-			</Step>
-			<Step transition="scale">
-				{({ accomplished }) => (
-					<img
-						style={{
-							filter: `grayscale(${accomplished ? 0 : 80}%)`,
-						}}
-						width="30"
-						src="https://orig00.deviantart.net/493a/f/2017/095/5/4/raichu_icon_by_pokemonshuffle_icons-db4ryym.png"
-					/>
-				)}
-			</Step>
-		</ProgressBar>
+		<div className={classes.wrapper}>
+			<ProgressBar percent={persent} filledBackground="#5558FA">
+				<Step transition="scale">
+					{({ accomplished }) =>
+						persent < 0 ? (
+							<Dot />
+						) : accomplished ? (
+							<DotChecked />
+						) : (
+							<Dot />
+						)
+					}
+				</Step>
+				<Step transition="scale">
+					{({ accomplished }) =>
+						persent === 49.9 ? (
+							<Dot />
+						) : accomplished ? (
+							<DotChecked />
+						) : (
+							<DotGray />
+						)
+					}
+				</Step>
+				<Step transition="scale">
+					{({ accomplished }) =>
+						persent === 99.9 ? (
+							<Dot />
+						) : accomplished ? (
+							<DotChecked />
+						) : (
+							<DotGray />
+						)
+					}
+				</Step>
+			</ProgressBar>
+		</div>
 	);
 };
+export default StepProgressBar;
 
-export default ProgressBar;

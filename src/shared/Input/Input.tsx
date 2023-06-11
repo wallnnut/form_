@@ -4,10 +4,10 @@ import classes from "./Input.module.scss";
 interface IInput {
 	type: string;
 	placeHolder: string;
-	inputName: string;
+	inputLabel?: string;
 	name: string;
 	value: string;
-	handleChange: (data: { [x: string]: string }) => void;
+	handleChange: (data: { name: string; value: string }) => void;
 }
 
 const Input: FC<IInput> = ({
@@ -16,14 +16,17 @@ const Input: FC<IInput> = ({
 	name,
 	type,
 	placeHolder,
-	inputName,
+	inputLabel,
 }) => {
 	const upadteInputField = (e: React.ChangeEvent<HTMLInputElement>): void => {
-		handleChange({ [e.target.name]: e.target.value });
+		handleChange({ name: e.target.name, value: e.target.value });
 	};
 	return (
 		<div className={classes.inputGroup}>
-			<p className={classes.inputName}>{inputName}</p>
+			{inputLabel ? (
+				<label className={classes.inputLabel}>{inputLabel}</label>
+			) : null}
+
 			<input
 				onChange={upadteInputField}
 				value={value}
