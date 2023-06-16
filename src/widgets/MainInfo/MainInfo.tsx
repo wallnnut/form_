@@ -1,22 +1,27 @@
-import React, { useState } from "react";
-import Input from "shared/Input/Input";
-import SelectField from "shared/SelectField/SelectField";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import PrevNextSteps from "features/PrevNextSteps/PrevNextSteps";
 import { useDispatch, useSelector } from "react-redux";
 import { userActions } from "entities/User/model/slice/userSlice";
-import { getNickName } from "entities/User/model/selectors/getNickName";
-import { getName } from "entities/User/model/selectors/getName";
-import { getSurname } from "entities/User/model/selectors/getSurname";
-import { getSex } from "entities/User/model/selectors/getSex";
+import {
+	getName,
+	getNickName,
+	getSurname,
+	getSex,
+} from "entities/User/model/selectors";
+import { MainInfoValidator } from "./model/validators/MainInfoValidator";
+import { Input, SelectField } from "shared/ui";
+import { PrevNextSteps } from "features";
+import { ErrorState } from "widgets/types";
+import { validate } from "shared/lib";
+import { trimFunction } from "shared/lib/trimFunction/trimFunction";
 
 export enum Sex {
 	MAN = "man",
 	WOMAN = "woman",
-	DEFAULT = "Выбирите пол",
+	DEFAULT = "",
 }
 
-interface IMainInfo {
+export interface MainInfoState {
 	nickName: string;
 	name: string;
 	surname: string;
@@ -30,12 +35,14 @@ const MainInfo = () => {
 	const surname = useSelector(getSurname);
 	const sex = useSelector(getSex);
 
-	const [mainInfo, setMainInfo] = useState<IMainInfo>({
+	const [mainInfo, setMainInfo] = useState<MainInfoState>({
 		nickName,
 		name,
 		surname,
 		sex,
 	});
+	const [errors, setError] = useState<ErrorState>({});
+	const isValid = Object.values(errors).length;
 
 	const navigate = useNavigate();
 
@@ -61,9 +68,14 @@ const MainInfo = () => {
 			[data.name]: data.value,
 		}));
 	};
+	useEffect(() => {
+		validate(MainInfoValidator, mainInfo, setError);
+	}, [mainInfo]);
+
 	const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
-		dispatch(userActions.submitMainInfo(mainInfo));
+		const data = trimFunction<MainInfoState>(mainInfo);
+		dispatch(userActions.submitMainInfo(data));
 		navigate("step/2");
 	};
 	return (
@@ -82,6 +94,7 @@ const MainInfo = () => {
 					name="nickName"
 					value={mainInfo.nickName}
 					handleChange={handleChange}
+					errorMessage={errors.nickName}
 				/>
 				<Input
 					inputLabel="Name"
@@ -90,6 +103,7 @@ const MainInfo = () => {
 					name="name"
 					value={mainInfo.name}
 					handleChange={handleChange}
+					errorMessage={errors.name}
 				/>
 				<Input
 					inputLabel="Surname"
@@ -98,16 +112,17 @@ const MainInfo = () => {
 					name="surname"
 					value={mainInfo.surname}
 					handleChange={handleChange}
+					errorMessage={errors.surname}
 				/>
 				<SelectField
 					handleChange={handleChange}
 					name="sex"
 					selectLabel="Sex"
 					options={options}
+					errorMessage={errors.sex}
 				/>
 			</div>
-
-			<PrevNextSteps />
+			<PrevNextSteps disabled={!!isValid} text1="Назад" text2="Далее" />
 		</form>
 	);
 };

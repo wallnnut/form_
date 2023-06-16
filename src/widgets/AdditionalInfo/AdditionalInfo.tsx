@@ -1,26 +1,29 @@
-import PrevNextSteps from "features/PrevNextSteps/PrevNextSteps";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import Button from "shared/Button/Button";
-import CheckBoxField from "shared/CheckBoxField/CheckBoxField";
-import Input from "shared/Input/Input";
-import RadioField from "shared/RadioField/RadioField";
 import classes from "./AdditionalInfo.module.scss";
-import { ReactComponent as DeleteIcon } from "shared/assets/icons/deleteIcon.svg";
-import { StateSchema } from "app/providers/storeProvider/config/stateSchema";
 import { useSelector, useDispatch } from "react-redux";
 import { userActions } from "entities/User/model/slice/userSlice";
 import { Advantage, CheckboxGroup } from "entities/User/model/types/userSchema";
-import { getAdvantages } from "entities/User/model/selectors/getAdvantages";
-import { getRadioValue } from "entities/User/model/selectors/getRadioValue";
-import { getCheckboxGroup } from "entities/User/model/selectors/getCheckboxGroup/getCheckboxGroup";
+import { AdditionalInfoValidator } from "./model/validators/additionalInfoValidator";
+import AddInput from "./AddInput/AddInput";
+import {
+	getAdvantages,
+	getRadioValue,
+	getCheckboxGroup,
+} from "entities/User/model/selectors";
+import { validate } from "shared/lib";
+import { PrevNextSteps } from "features";
+import CheckBoxGroup from "./CheckBoxGroup/CheckBoxGroup";
+import RadioGroup from "./RadioGroup/RadioGroup";
+import Advantages from "./Advantages/Advantages";
+import { ErrorState } from "widgets/types";
 
 export type Options = {
 	name: string;
 	value: string;
 };
 
-interface ExtraInfo {
+export interface ExtraInfo {
 	advantages: Advantage[];
 	checkboxGroup: CheckboxGroup[];
 	radioValue: string;
@@ -32,54 +35,60 @@ const AdditionalInfo = () => {
 	const advantages = useSelector(getAdvantages);
 	const radioValue = useSelector(getRadioValue);
 	const checkboxGroup = useSelector(getCheckboxGroup);
+	const [errors, setError] = useState<ErrorState>({});
 	const [extraInfo, setExtraInfo] = useState<ExtraInfo>({
 		advantages,
 		checkboxGroup,
 		radioValue,
 	});
+	const isValid = Object.values(errors).length;
 
 	useEffect(() => {
-		setExtraInfo((prevState: any) => ({
+		validate(AdditionalInfoValidator, extraInfo, setError);
+	}, [extraInfo]);
+
+	useEffect(() => {
+		setExtraInfo((prevState) => ({
 			...prevState,
 			advantages: advantages,
 		}));
 	}, [advantages]);
 
-	const handleChange = (data: { name: string; value: string | boolean }) => {
-		if (data.name.includes("advantage")) {
-			setExtraInfo((prevState: any): ExtraInfo => {
-				const newAdvantagesArr = prevState.advantages.map(
-					(advantage: any) => {
-						if (advantage.name === data.name) {
-							return { ...advantage, ...data };
-						} else {
-							return advantage;
-						}
-					}
-				);
-
-				return { ...prevState, advantages: newAdvantagesArr };
+	const handlePutCheck = (data: { name: string; value: boolean }) => {
+		setExtraInfo((prevState): ExtraInfo => {
+			const newCheckboxGroup = prevState.checkboxGroup.map((check) => {
+				if (check.name === data.name) {
+					return { ...check, ...data };
+				} else {
+					return check;
+				}
 			});
-		} else if (data.name.includes("checkbox")) {
-			setExtraInfo((prevState: any): ExtraInfo => {
-				const newCheckboxGroup = prevState.checkboxGroup.map(
-					(check: any) => {
-						if (check.name === data.name) {
-							return { ...check, ...data };
-						} else {
-							return check;
-						}
-					}
-				);
+			return { ...prevState, checkboxGroup: newCheckboxGroup };
+		});
+	};
+	const handleRadioChange = (data: {
+		name: string;
+		value: string | boolean;
+	}) => {
+		setExtraInfo((prevState) => ({
+			...prevState,
+			[data.name]: data.value,
+		}));
+	};
 
-				return { ...prevState, checkboxGroup: newCheckboxGroup };
+	const handleChange = (data: { name: string; value: string }) => {
+		setExtraInfo((prevState): ExtraInfo => {
+			const newAdvantagesArr = prevState.advantages.map((advantage) => {
+				if (advantage.name === data.name) {
+					return { ...advantage, ...data };
+				} else {
+					return advantage;
+				}
 			});
-		} else {
-			setExtraInfo((prevState: any) => ({
-				...prevState,
-				[data.name]: data.value,
-			}));
-		}
+
+			return { ...prevState, advantages: newAdvantagesArr };
+		});
+		dispatch(userActions.setAdvantage(data));
 	};
 
 	const handleAddInput = () => {
@@ -101,64 +110,31 @@ const AdditionalInfo = () => {
 	return (
 		<form onSubmit={handleSubmit}>
 			<div className={classes.inputWrapper}>
-				{extraInfo.advantages.map((advantage, id) =>
-					id === 0 ? (
-						<div className={classes.inputGroup}>
-							<Input
-								key={advantage.name}
-								placeHolder="Введите ваши качества"
-								type="text"
-								name={advantage.name}
-								value={advantage.value}
-								handleChange={handleChange}
-							/>
-							<button
-								style={{
-									background: "none",
-									display: "block",
-									flex: "0 0 auto",
-								}}
-							>
-								{<DeleteIcon />}
-							</button>
-						</div>
-					) : (
-						<div className={classes.inputGroup}>
-							<Input
-								key={advantage.name}
-								placeHolder="Введите ваши качества"
-								type="text"
-								name={advantage.name}
-								value={advantage.value}
-								handleChange={handleChange}
-							/>
-							<button>{<DeleteIcon />}</button>
-						</div>
-					)
-				)}
-			</div>
-			<Button type="button" handleClick={handleAddInput} text="+" />
-
-			<div className={classes.checkBoxGroup}>
-				{extraInfo.checkboxGroup.map((check, id) => (
-					<CheckBoxField
-						value={check.value}
-						checkBoxLabel={String(id + 1)}
-						name={check.name}
-						handleChange={handleChange}
-					/>
-				))}
-			</div>
-			<div className={classes.radioGroup}>
-				<RadioField
-					name="radioValue"
-					radioLabel="Radio group"
-					options={options}
-					handleChange={handleChange}
-					value={extraInfo.radioValue}
+				<Advantages
+					label="Advantages"
+					errors={errors}
+					handleAdvantageChange={handleChange}
+					advantages={extraInfo.advantages}
 				/>
 			</div>
-			<PrevNextSteps />
+			<AddInput handleAdd={handleAddInput} />
+			<div>
+				<div style={{ marginTop: "24px" }}>
+					<CheckBoxGroup
+						options={extraInfo.checkboxGroup}
+						handPutCheck={handlePutCheck}
+					/>
+				</div>
+
+				<div className={classes.radioGroup}>
+					<RadioGroup
+						options={options}
+						value={extraInfo.radioValue}
+						handleRadioChange={handleRadioChange}
+					/>
+				</div>
+			</div>
+			<PrevNextSteps disabled={!!isValid} text1="Назад" text2="Далее" />
 		</form>
 	);
 };

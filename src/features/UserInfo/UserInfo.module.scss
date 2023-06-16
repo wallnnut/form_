@@ -15,8 +15,19 @@
 
 .links {
     display: flex;
+    justify-content: space-between;
 }
 .link {
     margin-right: 15px;
 
+}
+
+@media (max-width: 576px) {
+    .links {
+        flex-direction: column;
+    }
+    ._wrapper {
+        margin: 15px 0px 0px 24px;
+    }
+    
 }

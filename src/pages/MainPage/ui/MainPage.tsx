@@ -1,8 +1,7 @@
+import { UserInfo } from "features";
 import React, { FC } from "react";
-import Container from "shared/Container/Container";
-import PhoneEmailSubmit from "widgets/PhoneEmailSubmit/PhoneEmailSubmit";
-import UserInfo from "features/UserInfo/UserInfo";
-import Divider from "shared/Divider/Divider";
+import { Container, Divider } from "shared/ui";
+import { PhoneEmailSubmit } from "widgets";
 
 const MainPage: FC = () => {
 	return (

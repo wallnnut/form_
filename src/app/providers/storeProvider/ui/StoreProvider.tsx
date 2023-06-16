@@ -1,5 +1,5 @@
 import React, { FC } from "react";
-import { Provider } from "react-redux";
+import { Provider, useDispatch } from "react-redux";
 import { createReduxStore } from "../config/store";
 
 export interface IStoreProvider {
@@ -7,9 +7,12 @@ export interface IStoreProvider {
 	initialState: any;
 }
 
-const StoreProvider: FC<IStoreProvider> = ({ initialState, children }) => {
-	const store = createReduxStore(initialState);
+export const store = createReduxStore({});
+
+const StoreProvider: FC<IStoreProvider> = ({ children }) => {
 	return <Provider store={store}>{children}</Provider>;
 };
 
 export default StoreProvider;
+export type AppDispatch = typeof store.dispatch;
+export const useAppDispatch: () => AppDispatch = useDispatch;

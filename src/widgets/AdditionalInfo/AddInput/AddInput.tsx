@@ -1,16 +1,22 @@
 import React, { FC } from "react";
-import Button from "shared/Button/Button";
+import { Button } from "shared/ui";
 
 export interface IAddInput {
-	arr: number[];
+	handleAdd: () => void;
 }
 
-const AddInput: FC<IAddInput> = ({ arr }) => {
+const AddInput: FC<IAddInput> = ({ handleAdd }) => {
 	const handleClick = () => {
-		const lastElement = arr[-1];
+		handleAdd();
 	};
-
-	return <Button handleClick={handleClick} text="+"></Button>;
+	return (
+		<Button
+			handleClick={handleClick}
+			extraClasses={["outlined", "add"]}
+			text="+"
+			type="button"
+		></Button>
+	);
 };
 
 export default AddInput;

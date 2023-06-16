@@ -1,17 +1,12 @@
 import React from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import { Outlet } from "react-router-dom";
-import Container from "shared/Container/Container";
-import ProgressBar from "shared/ProgressBar/ProgressBar";
+import { useParams } from "react-router-dom";
 import classes from "./CreatePage.module.scss";
-import MainInfo from "widgets/MainInfo/MainInfo";
-import AdditionalInfo from "widgets/AdditionalInfo/AdditionalInfo";
-import AboutInfo from "widgets/AboutInfo/AboutInfo";
+import { AboutInfo, AdditionalInfo, MainInfo } from "widgets";
+import { Container, StepProgressBar } from "shared/ui";
 
 const CreatePage = () => {
 	const params = useParams();
 	const whichStep = (id: string | undefined): number => {
-		console.log(id);
 		if (!id) {
 			return -1;
 		} else if (id === "2") {
@@ -23,8 +18,7 @@ const CreatePage = () => {
 	return (
 		<Container>
 			<div className={classes.container}>
-				<ProgressBar persent={whichStep(params.id)} />
-				<Outlet />
+				<StepProgressBar persent={whichStep(params.id)} />
 				{!params.id && <MainInfo />}
 				{params.id === "2" && <AdditionalInfo />}
 				{params.id === "3" && <AboutInfo />}
@@ -32,5 +26,7 @@ const CreatePage = () => {
 		</Container>
 	);
 };
+
+
 
 export default CreatePage;

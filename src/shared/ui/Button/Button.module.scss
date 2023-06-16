@@ -1,0 +1,34 @@
+.button {
+    background: var(--primary-element-bg-color);
+    border-radius: 4px;
+    padding: 12px 16px 12px 16px;
+    color: #fff;
+    
+}
+
+.outlined {
+    color: var(--primary-element-bg-color);
+    border: 1.5px solid var(--primary-element-bg-color);
+    border-radius: 4px;
+    background-color: #fff;
+}
+
+.add {
+    font-size: 20px;
+    font-weight: bold;
+    padding: 18px 16px;
+    line-height: 0;
+}
+
+.delete {
+    background: none;
+}
+
+.disabled {
+    opacity: 0.5;
+    background: #231;
+    cursor:default;
+}
+
+
+

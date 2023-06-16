@@ -11,6 +11,7 @@ export type CheckboxGroup = {
 };
 
 export interface UserSchema {
+	userId: string;
 	phone: string;
 	email: string;
 	nickName: string;
@@ -21,7 +22,7 @@ export interface UserSchema {
 	checkboxGroup: CheckboxGroup[];
 	radioValue: string;
 	about: string;
-	isLoading: boolean;
 	requestSuceeded: boolean;
-	requestFailed: boolean;
+	loadingStatus: string;
+	requestError: string | undefined;
 }

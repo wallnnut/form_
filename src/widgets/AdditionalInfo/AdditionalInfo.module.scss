@@ -6,6 +6,19 @@
     margin-bottom: 8px;
 }
 
+@media (max-width:630px) {
+    .inputWrapper {
+        width: 80%;
+        transition: .8s transform;
+    }
+}
+@media (max-width:500px) {
+    .inputWrapper {
+        width: 100%;
+        transition: .8s transform;
+    }
+}
+
 .checkBoxGroup {
     margin-top: 24px;
 }
