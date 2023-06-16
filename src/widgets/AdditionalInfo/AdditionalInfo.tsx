@@ -77,17 +77,6 @@ const AdditionalInfo = () => {
 	};
 
 	const handleChange = (data: { name: string; value: string }) => {
-		setExtraInfo((prevState): ExtraInfo => {
-			const newAdvantagesArr = prevState.advantages.map((advantage) => {
-				if (advantage.name === data.name) {
-					return { ...advantage, ...data };
-				} else {
-					return advantage;
-				}
-			});
-
-			return { ...prevState, advantages: newAdvantagesArr };
-		});
 		dispatch(userActions.setAdvantage(data));
 	};
 
